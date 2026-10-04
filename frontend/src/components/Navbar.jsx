@@ -1,9 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -12,13 +13,30 @@ const Navbar = () => {
 
   if (!user) return null;
 
+  const links = [
+    { to: '/dashboard', label: 'Dashboard' },
+    { to: '/monitoring', label: 'Monitoring' },
+    { to: '/alerts', label: 'Alerts' },
+  ];
+
   return (
-    <nav style={{ display: 'flex', gap: '1rem', padding: '1rem', borderBottom: '1px solid #ccc' }}>
-      <Link to="/dashboard">Dashboard</Link>
-      <Link to="/monitoring">Monitoring</Link>
-      <Link to="/alerts">Alerts</Link>
-      <span style={{ marginLeft: 'auto' }}>Hi, {user.name}</span>
-      <button onClick={handleLogout}>Logout</button>
+    <nav className="navbar">
+      <div className="navbar-brand">☁️ CloudPulse</div>
+      <div className="navbar-links">
+        {links.map((l) => (
+          <Link
+            key={l.to}
+            to={l.to}
+            className={`nav-link ${location.pathname === l.to ? 'active' : ''}`}
+          >
+            {l.label}
+          </Link>
+        ))}
+      </div>
+      <div className="navbar-user">
+        <span>Hi, {user.name}</span>
+        <button className="btn-logout" onClick={handleLogout}>Logout</button>
+      </div>
     </nav>
   );
 };
